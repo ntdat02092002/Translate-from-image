@@ -13,14 +13,14 @@ from PIL import Image
 import cv2
 from skimage import io
 import numpy as np
-import craft_utils
-import test
-import imgproc
-import file_utils
+from CRAFT_pytorch import craft_utils
+from CRAFT_pytorch import test
+from CRAFT_pytorch import imgproc
+from CRAFT_pytorch import file_utils
 import json
 import zipfile
 
-from craft import CRAFT
+from CRAFT_pytorch.craft import CRAFT
 
 from collections import OrderedDict
 
@@ -109,6 +109,7 @@ def crop(pts, image):
 """ For test images in a folder """
 # image_list, _, _ = file_utils.get_files(args.test_folder)
 
+
 result_folder = './result/'
 if not os.path.isdir(result_folder):
     os.mkdir(result_folder)
@@ -193,15 +194,15 @@ class My_CRAFT():
         words, re = sort_words(sx, word_images, 15)
         return words
 
-if __name__ == '__main__':
-    img_path = "image/cc.png"
-    weight_path = "craft_mlt_25k.pth"
+# if __name__ == '__main__':
+#     img_path = "image/cc.png"
+#     weight_path = "craft_mlt_25k.pth"
 
-    # list image cropped to show
-    model = My_CRAFT(weight_path)
-    word_images = model.detect(img_path)
-    # print(len(word_images))
-    word = word_images[3]
-    cv2.imshow("word", word)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+#     # list image cropped to show
+#     model = My_CRAFT(weight_path)
+#     word_images = model.detect(img_path)
+#     # print(len(word_images))
+#     word = word_images[3]
+#     cv2.imshow("word", word)
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()

@@ -22,9 +22,9 @@ from tensorflow.python.client import device_lib
 # char_list:   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 # total number of our output classes: len(char_list)
 # char_list = string.ascii_letters+string.digits
- 
+
 # # ============================= Model =====================
-# # input with shape of height=32 and width=128 
+# # input with shape of height=32 and width=128
 # inputs = Input(shape=(32,128,1))
 
 # # convolution layer with kernel size (3,3)
@@ -67,8 +67,8 @@ from tensorflow.python.client import device_lib
 
 # img = cv2.cvtColor(cv2.imread("./TestData/4.png"), cv2.COLOR_BGR2GRAY)
 # # convert each image of shape (32, 128, 1)
-# img = cv2.resize(img, (128,32)) 
-# img = np.expand_dims(img , axis = 2) 
+# img = cv2.resize(img, (128,32))
+# img = np.expand_dims(img , axis = 2)
 # # Normalize each image
 # cc = []
 # img = img/255.
@@ -81,19 +81,19 @@ from tensorflow.python.client import device_lib
 # # predict outputs on validation images
 # start_time = time.time()
 # prediction = act_model.predict(cc)
- 
+
 # # use CTC decoder
 # out = K.get_value(K.ctc_decode(prediction, input_length=np.ones(prediction.shape[0])*prediction.shape[1],
 #                          greedy=True)[0][0])
- 
+
 # # see the results
 # i = 0
 # for x in out:
 #     # print("original_text =  ", valid_orig_txt[i])
 #     print("predicted text = ", end = '')
-#     for p in x:  
+#     for p in x:
 #         if int(p) != -1:
-#             print(char_list[int(p)], end = '')       
+#             print(char_list[int(p)], end = '')
 #     print('\n')
 #     i+=1
 # end_time = time.time()
@@ -137,8 +137,8 @@ class OCR_CTC():
         for img in images:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             # convert each image of shape (32, 128, 1)
-            img = cv2.resize(img, (128,32)) 
-            img = np.expand_dims(img , axis = 2) 
+            img = cv2.resize(img, (128,32))
+            img = np.expand_dims(img , axis = 2)
             # Normalize each image
             img = img/255.
             self.test_img.append(img)
@@ -148,20 +148,20 @@ class OCR_CTC():
         result = ""
         # start_time = time.time()
         prediction = self.model.predict(self.pre_image(test_image))
-        
+
         # use CTC decoder
         out = K.get_value(K.ctc_decode(prediction, input_length=np.ones(prediction.shape[0])*prediction.shape[1],
                                 greedy=True)[0][0])
-        
+
         # see the results
         i = 0
         for x in out:
             # print("predicted text = ", end = '')
             for p in x:
-                # print(x)  
+                # print(x)
                 if int(p) != -1:
                     result = result + self.char_list[int(p)]
-                    # print(self.char_list[int(p)], end = '')       
+                    # print(self.char_list[int(p)], end = '')
             # print('\n')
             result = result + " "
             i+=1
@@ -169,11 +169,11 @@ class OCR_CTC():
         return result
         # print(end_time - start_time)
 
-model_path = "best_model.hdf5"
-ocr_ctc = OCR_CTC(weights=model_path)
+# model_path = "best_model.hdf5"
+# ocr_ctc = OCR_CTC(weights=model_path)
 
-image = cv2.imread("./TestData/6.png")
-imgs = []
-imgs.append(image)
-kk = ocr_ctc.infer(imgs)
-print(kk)
+# image = cv2.imread("./TestData/6.png")
+# imgs = []
+# imgs.append(image)
+# kk = ocr_ctc.infer(imgs)
+# print(kk)
