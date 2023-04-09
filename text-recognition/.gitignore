@@ -1,0 +1,8 @@
+*.pyc
+*.swp
+*.pkl
+*.pth
+result*
+weights*
+image/*
+*.hdf5
