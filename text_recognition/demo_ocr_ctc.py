@@ -19,6 +19,8 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.python.client import device_lib
 
+from text_recognition import pre_processing
+
 # char_list:   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 # total number of our output classes: len(char_list)
 # char_list = string.ascii_letters+string.digits
@@ -135,6 +137,7 @@ class OCR_CTC():
     def pre_image(self, images):
         self.test_img = []
         for img in images:
+            img = pre_processing.run(img)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             # convert each image of shape (32, 128, 1)
             img = cv2.resize(img, (128,32))

@@ -4,7 +4,7 @@ import text_recognition
 from text_recognition.demo_ocr_ctc import OCR_CTC
 
 if __name__ == '__main__':
-    img_path = "image/demo.png"
+    img_path = "image/cc.png"
 
     detector =  My_CRAFT(trained_model="craft_mlt_25k.pth")
     recogniter = OCR_CTC(weights="best_model.hdf5")
