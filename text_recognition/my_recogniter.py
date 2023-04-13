@@ -87,7 +87,7 @@ class Recogniter():
         list = []
         for img in image_list:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            img = cv2.resize(img, [self.opt.imhW, self.opt.imgH])
+            img = cv2.resize(img, [self.opt.imgW, self.opt.imgH])
             img = np.array(img) / 255.0
             list.append(img)
 
