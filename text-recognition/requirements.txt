@@ -1,6 +1,0 @@
-lmdb 
-pillow 
-torchvision 
-nltk 
-natsort
-torch==1.13.0
