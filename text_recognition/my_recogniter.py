@@ -70,7 +70,7 @@ class Recogniter():
 
         self.model.eval()
 
-    def infer(self, image_list, batch_size):
+    def infer(self, image_list):
         # prepare data. two demo images from https://github.com/bgshih/crnn#run-demo
         # AlignCollate_demo = AlignCollate(imgH=self.opt.imgH, imgW=self.opt.imgW, keep_ratio_with_pad=self.opt.PAD)
         # demo_data = RawDataset(root=image_folder, opt=self.opt)  # use RawDataset
@@ -81,13 +81,25 @@ class Recogniter():
         #     collate_fn=AlignCollate_demo, pin_memory=True)
     
         # print(demo_loader)
+
+        results = ""
+        # ============= Preprocessing ==========
+        list = []
+        for img in image_list:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            img = cv2.resize(img, [100, 32])
+            img = np.array(img) / 255.0
+            list.append(img)
+
+        list = np.array(list).reshape(len(list),1 , *list[0].shape)
+        list = torch.from_numpy(list).float()
+        list = list.unsqueeze(0)
+        # ============= end pre =============
+
+        batch_size = len(image_list)
         with torch.no_grad():
-            for image_tensors in image_list:
-                # batch_size = image_tensors.size(0)
-                print(batch_size)
-                print(image_tensors.shape, type(image_tensors))
+            for image_tensors in list:
                 image = image_tensors.to(self.device)
-                # print(image.shape, type(image))
 
                 # For max length prediction
                 length_for_pred = torch.IntTensor([self.opt.batch_max_length] * batch_size).to(self.device)
@@ -111,10 +123,10 @@ class Recogniter():
 
 
                 # log = open(f'./log_demo_result.txt', 'a')
-                dashed_line = '-' * 80
-                head = f'{"image_path":25s}\t{"predicted_labels":25s}\tconfidence score'
+                # dashed_line = '-' * 80
+                # head = f'{"image_path":25s}\t{"predicted_labels":25s}\tconfidence score'
 
-                print(f'{dashed_line}\n{head}\n{dashed_line}')
+                # print(f'{dashed_line}\n{head}\n{dashed_line}')
                 # log.write(f'{dashed_line}\n{head}\n{dashed_line}\n')
 
                 preds_prob = F.softmax(preds, dim=2)
@@ -127,12 +139,12 @@ class Recogniter():
 
                     # calculate confidence score (= multiply of pred_max_prob)
                     confidence_score = pred_max_prob.cumprod(dim=0)[-1]
-
-                    print(f'\t{pred:25s}\t{confidence_score:0.4f}')
+                    results = results + pred + " "
+                    # print(f'\t{pred:25s}\t{confidence_score:0.4f}')
                     # log.write(f'{img_name:25s}\t{pred:25s}\t{confidence_score:0.4f}\n')
 
                 # log.close()
-
+        return results
 
 if __name__ == '__main__':
 
@@ -143,23 +155,13 @@ if __name__ == '__main__':
         if filename.endswith('.jpg') or filename.endswith('.png'):
             image_path = os.path.join(image_folder, filename)
             image = cv2.imread(image_path)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            image = cv2.resize(image, [100, 32])
-            image = np.array(image) / 255.0
-            image = image.astype(np.float64)
             image_list.append(image)
-    # for img in image_list:
-    #     cv2.imshow("word", img)
-    #     cv2.waitKey(0)
-    #     cv2.destroyAllWindows()
-    image_list = np.array(image_list).reshape(len(image_list),1 , *image_list[0].shape)
-    image_list = torch.from_numpy(image_list).float()
-    image_list = image_list.unsqueeze(0)
-    print(image_list.shape, type(image_list))
+    image_list = np.array(image_list)
 
     # cudnn.benchmark = True
     # cudnn.deterministic = True
     # opt.num_gpu = torch.cuda.device_count()
     # demo(opt)
     recogniter = Recogniter("TPS-ResNet-BiLSTM-Attn.pth", "TPS", "ResNet", "BiLSTM", "Attn")
-    recogniter.infer(image_list, 10) #path to folder contain word-croped images
+    ans = recogniter.infer(image_list) #path to folder contain word-croped images
+    print(ans)
