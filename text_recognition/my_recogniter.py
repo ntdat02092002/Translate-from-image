@@ -79,7 +79,7 @@ class Recogniter():
         #     shuffle=False,
         #     num_workers=int(self.opt.workers),
         #     collate_fn=AlignCollate_demo, pin_memory=True)
-    
+
         # print(demo_loader)
 
         results = ""
@@ -148,7 +148,7 @@ class Recogniter():
 
 if __name__ == '__main__':
 
-    image_folder = 'demo_image'
+    image_folder = 'img'
     image_list = []
 
     for filename in os.listdir(image_folder):
@@ -156,12 +156,12 @@ if __name__ == '__main__':
             image_path = os.path.join(image_folder, filename)
             image = cv2.imread(image_path)
             image_list.append(image)
-    image_list = np.array(image_list)
+    image_list = np.array(image_list, dtype=object)
 
     # cudnn.benchmark = True
     # cudnn.deterministic = True
     # opt.num_gpu = torch.cuda.device_count()
     # demo(opt)
-    recogniter = Recogniter("TPS-ResNet-BiLSTM-Attn.pth", "TPS", "ResNet", "BiLSTM", "Attn")
+    recogniter = Recogniter("TPS-ResNet-BiLSTM-CTC.pth", "TPS", "ResNet", "BiLSTM", "CTC")
     ans = recogniter.infer(image_list) #path to folder contain word-croped images
     print(ans)
