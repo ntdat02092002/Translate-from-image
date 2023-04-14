@@ -10,9 +10,9 @@ import cv2
 import os
 import numpy as np
 
-from utils import CTCLabelConverter, AttnLabelConverter
-from dataset import RawDataset, AlignCollate
-from model import Model
+from text_recognition.utils import CTCLabelConverter, AttnLabelConverter
+from text_recognition.dataset import RawDataset, AlignCollate
+from text_recognition.model import Model
 
 class Opt():
     def __init__(self, saved_model, Transformation, FeatureExtraction, SequenceModeling, Prediction, sensitive=False):
