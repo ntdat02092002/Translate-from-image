@@ -1,0 +1,5 @@
+torch==1.13.0
+torchvision==0.14.0
+opencv-python==4.7.0.72
+scikit-image==0.20.0
+scipy==1.9.1

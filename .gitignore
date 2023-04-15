@@ -1,0 +1,7 @@
+*.pth
+*.hdf5
+image/*
+demo/*
+venv/*
+result/*
+img/*
