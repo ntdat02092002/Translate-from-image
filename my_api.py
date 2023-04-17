@@ -34,15 +34,8 @@ app.add_middleware(
 
 @app.get("/")
 async def home(request: Request):
-    ''' Returns barebones HTML form allowing the user to select a file '''
 
-    html_content = '''
-    <div>
-        ahihi
-    </div>
-    '''
-
-    return HTMLResponse(content=html_content, status_code=200)
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/ocr")
 async def ocr(image: UploadFile = File(...)):
