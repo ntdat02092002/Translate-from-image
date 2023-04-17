@@ -159,7 +159,7 @@ class My_CRAFT():
             self.refine_net.eval()
             POLY = True
 
-    def detect(self, image_path):
+    def detect(self, image):
         # list image cropped to show
         word_images = []
         sx = []
@@ -167,8 +167,8 @@ class My_CRAFT():
         t = time.time()
 
         # load data
-        print("Test image {:s}".format(image_path), end='\r')
-        image = imgproc.loadImage(image_path)
+        # print("Test image {:s}".format(image_path), end='\r')
+        # image = imgproc.loadImage(image_path)
 
         bboxes, polys, score_text = test.test_net(self.net, image, self.text_threshold, self.link_threshold,
             self.low_text, self.cuda, self.poly, self.canvas_size, self.mag_ratio, self.refine_net)
@@ -183,12 +183,12 @@ class My_CRAFT():
                 word_images.append(word)
                 dem += 1
 
-        # save score text
-        filename, file_ext = os.path.splitext(os.path.basename(image_path))
-        mask_file = result_folder + "/res_" + filename + '_mask.jpg'
-        cv2.imwrite(mask_file, score_text)
+        # # save score text
+        # filename, file_ext = os.path.splitext(os.path.basename(image_path))
+        # mask_file = result_folder + "/res_" + filename + '_mask.jpg'
+        # cv2.imwrite(mask_file, score_text)
 
-        file_utils.saveResult(image_path, image[:,:,::-1], polys, dirname=result_folder)
+        # file_utils.saveResult(image_path, image[:,:,::-1], polys, dirname=result_folder)
 
         print("elapsed time : {}s".format(time.time() - t))
         words, re = sort_words(sx, word_images, 15)

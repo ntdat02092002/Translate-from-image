@@ -8,4 +8,7 @@ pillow==9.5.0
 nltk==3.8.1
 natsort==8.3.1
 six==1.16.0
-
+fastapi==0.95.1
+uvicorn[standard]==0.21.1
+python-multipart==0.0.6
+jinja2==3.1.2

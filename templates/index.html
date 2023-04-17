@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Image and Call API</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <h1 class="text-center mb-4">OCR Image</h1>
+                <form id="uploadForm" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="imageUpload">Select Image:</label>
+                        <input type="file" name="image" id="imageUpload" class="form-control-file">
+                        <div class=" mt-4">
+                            <img src="" class="card-img-top" id="preview-image" style="display: none;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <div id="loading" class="text-center mt-4" style="display: none;">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <!-- <div id="result" class="mt-4"></div> -->
+                <div class="row justify-content-center mt-4" id="result-container" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Result:</h5>
+                            <p class="card-text" id="result-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <style>
+      /* CSS cho ảnh */
+      #preview-image {
+        border: 1px solid #ccc; /* Thêm border 1px solid màu xám */
+        max-width: 100%; /* Giới hạn chiều rộng của ảnh */
+        height: auto; /* Tự động tính chiều cao của ảnh */
+      }
+    </style>
+    <script>
+        $(document).ready(function() {
+            $('#imageUpload').change(function() {
+                // Lấy file đã chọn
+                const file = $('#imageUpload')[0].files[0];
+                // Tạo URL cho file
+                const url = URL.createObjectURL(file);
+                // Gán URL vào thuộc tính src của thẻ img
+                $('#preview-image').attr('src', url).show();
+            });
+            $('#uploadForm').submit(function(event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '/ocr',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        $('#loading').show();
+                        // $('#result').html('');
+                        $('#result-container').hide();
+                    },
+                    success: function(response) {
+                        $('#result-container').show();
+                        // $('#result-image').attr('src', data.image_url);
+                        $('#result-text').text(response.result);
+                        // $('#result').html('<p>' + response.result + '</p>');
+                    },
+                    error: function(jqXHR, status, error) {
+                        console.log(status + ': ' + error);
+                    },
+                    complete: function() {
+                        $('#loading').hide();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
