@@ -2,7 +2,7 @@ import logging
 import time
 import os
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # import tensorflow_datasets as tfds
 import tensorflow as tf
 import tensorflow_text
@@ -16,13 +16,13 @@ def positional_encoding(length, depth):
 
   positions = np.arange(length)[:, np.newaxis]     # (seq, 1)
   depths = np.arange(depth)[np.newaxis, :]/depth   # (1, depth)
-  
+
   angle_rates = 1 / (10000**depths)         # (1, depth)
   angle_rads = positions * angle_rates      # (pos, depth)
 
   pos_encoding = np.concatenate(
       [np.sin(angle_rads), np.cos(angle_rads)],
-      axis=-1) 
+      axis=-1)
 
   return tf.cast(pos_encoding, dtype=tf.float32)
 
@@ -31,7 +31,7 @@ class PositionalEmbedding(tf.keras.layers.Layer):
   def __init__(self, vocab_size, d_model):
     super().__init__()
     self.d_model = d_model
-    self.embedding = tf.keras.layers.Embedding(vocab_size, d_model, mask_zero=True) 
+    self.embedding = tf.keras.layers.Embedding(vocab_size, d_model, mask_zero=True)
     self.pos_encoding = positional_encoding(length=2048, depth=d_model)
 
   def compute_mask(self, *args, **kwargs):
@@ -51,7 +51,7 @@ class BaseAttention(tf.keras.layers.Layer):
     self.mha = tf.keras.layers.MultiHeadAttention(**kwargs)
     self.layernorm = tf.keras.layers.LayerNormalization()
     self.add = tf.keras.layers.Add()
-  
+
 
 class CrossAttention(BaseAttention):
   def call(self, x, context):
@@ -60,7 +60,7 @@ class CrossAttention(BaseAttention):
         key=context,
         value=context,
         return_attention_scores=True)
-   
+
     # Cache the attention scores for plotting later.
     self.last_attn_scores = attn_scores
 
@@ -104,7 +104,7 @@ class FeedForward(tf.keras.layers.Layer):
 
   def call(self, x):
     x = self.add([x, self.seq(x)])
-    x = self.layer_norm(x) 
+    x = self.layer_norm(x)
     return x
 
 class EncoderLayer(tf.keras.layers.Layer):
@@ -145,7 +145,7 @@ class Encoder(tf.keras.layers.Layer):
   def call(self, x):
     # `x` is token-IDs shape: (batch, seq_len)
     x = self.pos_embedding(x)  # Shape `(batch_size, seq_len, d_model)`.
-    
+
     # Add dropout.
     x = self.dropout(x)
 
@@ -168,7 +168,7 @@ class DecoderLayer(tf.keras.layers.Layer):
         num_heads=num_heads,
         key_dim=d_model,
         dropout=dropout_rate)
-    
+
     self.cross_attention = CrossAttention(
         num_heads=num_heads,
         key_dim=d_model,
@@ -310,18 +310,18 @@ class Translator(tf.Module):
     # The input sentence is English, hence adding the `[START]` and `[END]` tokens.
     # sentence = np.array([sentence])
     sentence = tf.convert_to_tensor(sentence)
-    
+
     assert isinstance(sentence, tf.Tensor)
 
     # if len(sentence.shape) == 0:
     #   sentence = sentence[tf.newaxis]
     # print(sentence)
     # sentence = tf.convert_to_tensor(sentence)
-    
+
     sentence = self.tokenizer_en.encode(sentence.numpy().decode("utf-8"))
     sentence = np.array(sentence)
     sentence = tf.convert_to_tensor(sentence)
-    # print(sentence) 
+    # print(sentence)
     encoder_input = sentence
     encoder_input = tf.expand_dims(encoder_input, 0)
 
@@ -394,7 +394,7 @@ learning_rate = CustomSchedule(d_model)
 optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98,
                                      epsilon=1e-9)
 
-checkpoint_path = "./model/TransEnVi.ckpt"
+checkpoint_path = "./models/TransEnVi.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # Create a callback that saves the model's weights
