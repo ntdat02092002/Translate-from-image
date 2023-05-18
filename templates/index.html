@@ -9,7 +9,7 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-6 mx-auto">
-                <h1 class="text-center mb-4">OCR Image</h1>
+                <h1 class="text-center mb-4">OCR & Translate Image</h1>
                 <form id="uploadForm" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="imageUpload">Select Image:</label>
@@ -62,7 +62,7 @@
                 var formData = new FormData(this);
 
                 $.ajax({
-                    url: '/ocr',
+                    url: '/ocr-translate',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -75,7 +75,7 @@
                     success: function(response) {
                         $('#result-container').show();
                         // $('#result-image').attr('src', data.image_url);
-                        $('#result-text').text(response.result);
+                        $('#result-text').text(JSON.stringify(response));
                         // $('#result').html('<p>' + response.result + '</p>');
                     },
                     error: function(jqXHR, status, error) {

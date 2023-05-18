@@ -8,9 +8,9 @@ import tensorflow as tf
 import tensorflow_text
 from transformers import AutoModel, AutoTokenizer, BertTokenizer
 
-from transformer import Transformer
-from utils import CustomSchedule, print_translation
-from translator import TranslatorBaseTF
+from translation.transformer import Transformer
+from translation.utils import CustomSchedule, print_translation
+from translation.translator import TranslatorBaseTF
 
 
 BUFFER_SIZE = 20000
