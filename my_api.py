@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Request, File, UploadFile
+from fastapi import FastAPI, Request, File, Form, UploadFile
 # from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 import json
 import cv2
@@ -19,6 +20,7 @@ translator = Translator("models/TransEnVi.ckpt")
 
 app = FastAPI()
 templates = Jinja2Templates(directory = 'templates')
+app.mount("/images", StaticFiles(directory="templates/images"), name="images")
 
 origins = [
     "http://localhost",
@@ -70,6 +72,15 @@ async def ocr(image: UploadFile = File(...)):
             }
     return JSONResponse(content=results)
 
+@app.post("/direct-translate")
+async def direct_tran(text: str = Form(...)):
+    translated = translator.translate(text)
+
+    return {"result":
+                {
+                    "vi": translated
+                }
+            }
 
 if __name__ == '__main__':
     import uvicorn
