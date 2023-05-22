@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import RedirectResponse
 
 import json
 import cv2
@@ -21,6 +22,7 @@ translator = Translator("models/TransEnVi.ckpt")
 app = FastAPI()
 templates = Jinja2Templates(directory = 'templates')
 app.mount("/images", StaticFiles(directory="templates/images"), name="images")
+app.mount("/static", StaticFiles(directory="templates"), name="static")
 
 origins = [
     "http://localhost",
@@ -38,8 +40,15 @@ app.add_middleware(
 
 @app.get("/")
 async def home(request: Request):
-
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/image")
+async def image_page(request: Request):
+    return templates.TemplateResponse("image.html", {"request": request})
+
+@app.get("/text")
+async def text_page(request: Request):
+    return templates.TemplateResponse("text.html", {"request": request})
 
 @app.post("/ocr")
 async def ocr(image: UploadFile = File(...)):
