@@ -2,9 +2,8 @@ from fastapi import FastAPI, Request, File, Form, UploadFile
 # from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.responses import RedirectResponse
 
 import json
 import cv2
@@ -40,7 +39,7 @@ app.add_middleware(
 
 @app.get("/")
 async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return RedirectResponse("/text")
 
 @app.get("/image")
 async def image_page(request: Request):
