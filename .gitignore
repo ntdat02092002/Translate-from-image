@@ -5,6 +5,7 @@ demo/*
 venv/*
 result/*
 img/*
+models/*
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BlackCat Translate</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div>
+            <img src="images/blackcat.png" class="img" width="100" height="50">
+            <a class="navbar-brand" href="#">BlackCat Translate</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+            </li>
+        </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+        <div class="col-2">
+            <button type="button" class="btn btn-outline-primary d-flex align-items-center" id="text">
+            <img src="images/vanban.jpg" class="img mr-2" width="25" height="25">
+            Văn bản
+            </button>
+        </div>
+
+        <div class="col-2">
+            <button type="button" class="btn btn-outline-primary d-flex align-items-center" id="image">
+            <img src="images/hinhanh.jpg" class="img mr-2" width="25" height="25">
+            Hình ảnh
+            </button>
+        </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <form id="uploadForm" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                    <label for="imageUpload">Select Image:</label>
+                    <input type="file" name="image" id="imageUpload" class="form-control-file">
+                    <div class="mt-4">
+                        <img src="" class="card-img-top" id="preview-image" style="display: none;">
+                    </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Translate</button>
+                </form>
+                <div id="loading" class="text-center mt-4" style="display: none;">
+                    <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-4" id="result-container" style="display: none;">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group rounded border bg-light p-2">
+                    <label>English</label>
+                    <textarea class="form-control" rows="5" id="result-text-en" placeholder="Enter text to translate..."></textarea>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group rounded border bg-light p-2">
+                    <label>Vietnamese</label>
+                    <textarea class="form-control" rows="5" id="result-text-vi" placeholder="Translated text..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <style>
+      /* CSS cho ảnh */
+      #preview-image {
+        border: 1px solid #ccc; /* Thêm border 1px solid màu xám */
+        max-width: 100%; /* Giới hạn chiều rộng của ảnh */
+        height: auto; /* Tự động tính chiều cao của ảnh */
+      }
+    </style>
+    <script>
+        document.getElementById("image").addEventListener("click", function() {
+            window.location.href = "/image";
+          });
+          document.getElementById("text").addEventListener("click", function() {
+            window.location.href = "/text";
+          });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#imageUpload').change(function() {
+                // Lấy file đã chọn
+                const file = $('#imageUpload')[0].files[0];
+                // Tạo URL cho file
+                const url = URL.createObjectURL(file);
+                // Gán URL vào thuộc tính src của thẻ img
+                $('#preview-image').attr('src', url).show();
+            });
+            $('#uploadForm').submit(function(event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '/ocr-translate',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        $('#loading').show();
+                        // $('#result').html('');
+                        $('#result-container').hide();
+                    },
+                    success: function(response) {
+                        $('#result-container').show();
+                        // $('#result-image').attr('src', data.image_url);
+                        $('#result-text-en').text(JSON.stringify(response.result.en).replace(/"/g, ''));
+                        $('#result-text-vi').text(JSON.stringify(response.result.vi).replace(/"/g, ''));
+                        // $('#result').html('<p>' + response.result + '</p>');
+                    },
+                    error: function(jqXHR, status, error) {
+                        console.log(status + ': ' + error);
+                    },
+                    complete: function() {
+                        $('#loading').hide();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
