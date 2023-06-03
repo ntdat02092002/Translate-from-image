@@ -5,7 +5,7 @@ import torch
 import torch.backends.cudnn as cudnn
 import torch.utils.data
 import torch.nn.functional as F
-from spellchecker import SpellChecker
+# from spellchecker import SpellChecker
 
 import cv2
 import os
@@ -82,7 +82,7 @@ class Recogniter():
         #     collate_fn=AlignCollate_demo, pin_memory=True)
 
         # print(demo_loader)
-        spell = SpellChecker()
+        # spell = SpellChecker()
         results = ""
         # ============= Preprocessing ==========
         list = []
