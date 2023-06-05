@@ -200,6 +200,8 @@ class My_CRAFT():
         word_images = []
         sx = []
 
+        image = imgproc.deskewing_text(image)
+
         t = time.time()
 
         bboxes, polys, score_text = test.test_net(self.net, image, self.text_threshold, self.link_threshold,
