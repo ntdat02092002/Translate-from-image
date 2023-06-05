@@ -41,6 +41,7 @@ class Translator():
     def translate(self, sentence):
         translated_text, translated_tokens, attention_weights = self.translator(sentence)
         # print_translation(sentence, translated_text, ground_truth)
+        translated_text = translated_text.replace('_', ' ')
         return translated_text
 
 
