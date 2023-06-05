@@ -34,7 +34,7 @@ def four_point_transform(image, rect):
 def group_text_box(polys, slope_ths = 0.1, ycenter_ths = 0.5, height_ths = 0.5, width_ths = 1.0, add_margin = 0.05, sort_output = True):
     # poly top-left, top-right, low-right, low-left
     horizontal_list, free_list,combined_list, merged_list = [],[],[],[]
-
+    # print(polys[0])
     for poly in polys:
         slope_up = (poly[3]-poly[1])/np.maximum(10, (poly[2]-poly[0]))
         slope_down = (poly[5]-poly[7])/np.maximum(10, (poly[4]-poly[6]))
@@ -66,10 +66,10 @@ def group_text_box(polys, slope_ths = 0.1, ycenter_ths = 0.5, height_ths = 0.5, 
     if sort_output:
         horizontal_list = sorted(horizontal_list, key=lambda item: item[4])
 
-    print("---------------------horizontal list--------------------------------")
-    print(horizontal_list)
-    print("len: ", len(horizontal_list))
-    print("-----------------------------------------------------------------------")
+    # print("---------------------horizontal list--------------------------------")
+    # print(horizontal_list)
+    # print("len: ", len(horizontal_list))
+    # print("-----------------------------------------------------------------------")
     # combine box
     new_box = []
     for poly in horizontal_list:
@@ -91,63 +91,73 @@ def group_text_box(polys, slope_ths = 0.1, ycenter_ths = 0.5, height_ths = 0.5, 
                 new_box = [poly]
     combined_list.append(new_box)
 
-    print
+    combined_list_sorted = []
 
-    # print(combined_list)
-    # print("len ", len(combined_list))
+    for line in  combined_list:
+        combined_list_sorted.append(sorted(line, key=lambda item: item[0]))
 
-    # merge list use sort again
-    for boxes in combined_list:
-        if len(boxes) == 1: # one box per line
-            box = boxes[0]
-            margin = int(add_margin*min(box[1]-box[0],box[5]))
-            merged_list.append([box[0]-margin,box[1]+margin,box[2]-margin,box[3]+margin])
-        else: # multiple boxes per line
-            boxes = sorted(boxes, key=lambda item: item[0])
+    free_list_sorted = sorted(free_list, key=lambda item: item[0][1])
 
-            merged_box, new_box = [],[]
-            for box in boxes:
-                if len(new_box) == 0:
-                    b_height = [box[5]]
-                    x_max = box[1]
-                    new_box.append(box)
-                else:
-                    if (abs(np.mean(b_height) - box[5]) < height_ths*np.mean(b_height)) and ((box[0]-x_max) < width_ths *(box[3]-box[2])): # merge boxes
-                        b_height.append(box[5])
-                        x_max = box[1]
-                        new_box.append(box)
-                    else:
-                        b_height = [box[5]]
-                        x_max = box[1]
-                        merged_box.append(new_box)
-                        new_box = [box]
-            if len(new_box) >0: merged_box.append(new_box)
 
-            for mbox in merged_box:
-                if len(mbox) != 1: # adjacent box in same line
-                    # do I need to add margin here?
-                    x_min = min(mbox, key=lambda x: x[0])[0]
-                    x_max = max(mbox, key=lambda x: x[1])[1]
-                    y_min = min(mbox, key=lambda x: x[2])[2]
-                    y_max = max(mbox, key=lambda x: x[3])[3]
+    # print("-------------------------------combine-------------------------")
+    # print(combined_list_sorted)
+    # print("len ", len(combined_list_sorted))
 
-                    box_width = x_max - x_min
-                    box_height = y_max - y_min
-                    margin = int(add_margin * (min(box_width, box_height)))
+    # # merge list use sort again
+    # for boxes in combined_list:
+    #     if len(boxes) == 1: # one box per line
+    #         box = boxes[0]
+    #         margin = int(add_margin*min(box[1]-box[0],box[5]))
+    #         merged_list.append([box[0]-margin,box[1]+margin,box[2]-margin,box[3]+margin])
+    #     else: # multiple boxes per line
+    #         boxes = sorted(boxes, key=lambda item: item[0])
 
-                    merged_list.append([x_min-margin, x_max+margin, y_min-margin, y_max+margin])
-                else: # non adjacent box in same line
-                    box = mbox[0]
+    #         merged_box, new_box = [],[]
+    #         for box in boxes:
+    #             if len(new_box) == 0:
+    #                 b_height = [box[5]]
+    #                 x_max = box[1]
+    #                 new_box.append(box)
+    #             else:
+    #                 if (abs(np.mean(b_height) - box[5]) < height_ths*np.mean(b_height)) and ((box[0]-x_max) < width_ths *(box[3]-box[2])): # merge boxes
+    #                     b_height.append(box[5])
+    #                     x_max = box[1]
+    #                     new_box.append(box)
+    #                 else:
+    #                     b_height = [box[5]]
+    #                     x_max = box[1]
+    #                     merged_box.append(new_box)
+    #                     new_box = [box]
+    #         if len(new_box) >0: merged_box.append(new_box)
 
-                    box_width = box[1] - box[0]
-                    box_height = box[3] - box[2]
-                    margin = int(add_margin * (min(box_width, box_height)))
+    #         for mbox in merged_box:
+    #             if len(mbox) != 1: # adjacent box in same line
+    #                 # do I need to add margin here?
+    #                 x_min = min(mbox, key=lambda x: x[0])[0]
+    #                 x_max = max(mbox, key=lambda x: x[1])[1]
+    #                 y_min = min(mbox, key=lambda x: x[2])[2]
+    #                 y_max = max(mbox, key=lambda x: x[3])[3]
 
-                    merged_list.append([box[0]-margin,box[1]+margin,box[2]-margin,box[3]+margin])
-    # may need to check if box is really in image
-    print(merged_list)
-    print("len: ", len(merged_list))
-    return merged_list, free_list
+    #                 box_width = x_max - x_min
+    #                 box_height = y_max - y_min
+    #                 margin = int(add_margin * (min(box_width, box_height)))
+
+    #                 merged_list.append([x_min-margin, x_max+margin, y_min-margin, y_max+margin])
+    #             else: # non adjacent box in same line
+    #                 box = mbox[0]
+
+    #                 box_width = box[1] - box[0]
+    #                 box_height = box[3] - box[2]
+    #                 margin = int(add_margin * (min(box_width, box_height)))
+
+    #                 merged_list.append([box[0]-margin,box[1]+margin,box[2]-margin,box[3]+margin])
+    # # may need to check if box is really in image
+    # print(merged_list)
+    # print("len: ", len(merged_list))
+    # return merged_list, free_list
+
+
+    return combined_list_sorted, free_list_sorted
 
 
 def calculate_ratio(width,height):
@@ -217,3 +227,24 @@ def get_image_list(horizontal_list, free_list, img, model_height = 64, sort_outp
     if sort_output:
         image_list = sorted(image_list, key=lambda item: item[0][0][1]) # sort by vertical position
     return image_list, max_width
+
+
+def crop_combine_list(combined_list, img):
+    image_list = []
+
+    for line in combined_list:
+        for x_min, x_max, y_min, y_max, __, ___ in line:
+            image_list.append(img[y_min:y_max, x_min:x_max])
+
+    return image_list
+
+def crop_free_list(free_list, img):
+    free_image_list = []
+
+    for box in free_list:
+        rect = np.array(box, dtype = "float32")
+        transformed_img = four_point_transform(img, rect)
+        free_image_list.append(transformed_img)
+
+    return free_image_list
+

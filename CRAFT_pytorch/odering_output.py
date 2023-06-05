@@ -24,7 +24,7 @@ from CRAFT_pytorch.craft import CRAFT
 
 from collections import OrderedDict
 
-from CRAFT_pytorch.odering_output_utils import group_text_box, diff, get_image_list
+from CRAFT_pytorch.odering_output_utils import group_text_box, diff, get_image_list, crop_combine_list
 
 
 def crop(pts, image):
@@ -101,6 +101,7 @@ class My_CRAFT():
         bboxes, polys, score_text = test.test_net(self.net, image, self.text_threshold, self.link_threshold,
             self.low_text, self.cuda, self.poly, self.canvas_size, self.mag_ratio, self.refine_net)
 
+        print(len(bboxes))
         # dem = 0
         # for box_num in range(len(bboxes)):
         #     pts = bboxes[box_num]
@@ -111,45 +112,20 @@ class My_CRAFT():
         #         word_images.append(word)
         #         dem += 1
 
-        text_box_list = []
 
         single_img_result = []
         for i, box in enumerate(polys):
             poly = np.array(box).astype(np.int32).reshape((-1))
             single_img_result.append(poly)
-        text_box_list.append(single_img_result)
+
+        #odering bboxs
+        combine_list, free_list = group_text_box(single_img_result) # use all default param
 
 
-        min_size = 20
-        horizontal_list_agg, free_list_agg = [], []
-        for text_box in text_box_list:
-            horizontal_list, free_list = group_text_box(text_box) # use all default param
-            if min_size:
-                horizontal_list = [i for i in horizontal_list if max(
-                    i[1] - i[0], i[3] - i[2]) > min_size]
-                free_list = [i for i in free_list if max(
-                    diff([c[0] for c in i]), diff([c[1] for c in i])) > min_size]
-            horizontal_list_agg.append(horizontal_list)
-            free_list_agg.append(free_list)
+        # crop image
+        image_list = crop_combine_list(combine_list, image)
 
+        free_image_list = crop_free_list(free_list, image)
+        image_list.extend(free_image_list)
 
-        img_cv_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        for bbox in horizontal_list_agg[0]:
-            h_list = [bbox]
-            f_list = []
-            image_list, max_width = get_image_list(h_list, f_list, img_cv_grey)
-
-            print(image_list)
-            for img in image_list:
-                img = img[1]
-                cv2.imshow("word", img)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-
-        return horizontal_list_agg[0], free_list_agg[0]
-
-        # print("elapsed time : {}s".format(time.time() - t))
-        # # words, re = sort_words(sx, word_images, 15)
-        # return words
-
+        return image_list

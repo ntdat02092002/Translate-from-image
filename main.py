@@ -20,7 +20,7 @@ def loadImage(img_file):
     return img
 
 if __name__ == '__main__':
-    img_path = "image/test2.png"
+    img_path = "image/test7.png"
 
     img = loadImage(img_path)
 
@@ -34,7 +34,12 @@ if __name__ == '__main__':
     # translated = translator.translate(results)
     # print(translated)
 
-    horizontal_list, free_list = detector.detect(img)
+    image_list = detector.detect(img)
+    print(image_list)
+    for image_ in image_list:
+        cv2.imshow("fds", image_)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     # print(horizontal_list)
     # print(free_list)
