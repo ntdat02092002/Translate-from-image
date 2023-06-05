@@ -1,9 +1,10 @@
 import CRAFT_pytorch
-from CRAFT_pytorch.my_CRAFT import My_CRAFT
-import text_recognition
-from text_recognition.my_recogniter import Recogniter
-import translation
-from translation.my_translator import Translator
+# from CRAFT_pytorch.my_CRAFT import My_CRAFT
+from CRAFT_pytorch.odering_output import My_CRAFT
+# import text_recognition
+# from text_recognition.my_recogniter import Recogniter
+# import translation
+# from translation.my_translator import Translator
 
 import numpy as np
 from skimage import io
@@ -19,16 +20,21 @@ def loadImage(img_file):
     return img
 
 if __name__ == '__main__':
-    img_path = "image/test.png"
+    img_path = "image/test2.png"
 
     img = loadImage(img_path)
 
     detector =  My_CRAFT(trained_model="models/craft_mlt_25k.pth")
-    recogniter = Recogniter("models/TPS-ResNet-BiLSTM-CTC.pth", "TPS", "ResNet", "BiLSTM", "CTC")
-    translator = Translator("models/TransEnVi.ckpt")
+    # recogniter = Recogniter("models/TPS-ResNet-BiLSTM-CTC.pth", "TPS", "ResNet", "BiLSTM", "CTC")
+    # translator = Translator("models/TransEnVi.ckpt")
      #path to folder contain word-croped images
 
-    word_images = detector.detect(img)
-    results = recogniter.infer(word_images)
-    translated = translator.translate(results)
-    print(translated)
+    # word_images = detector.detect(img)
+    # results = recogniter.infer(word_images)
+    # translated = translator.translate(results)
+    # print(translated)
+
+    horizontal_list, free_list = detector.detect(img)
+
+    # print(horizontal_list)
+    # print(free_list)
