@@ -70,7 +70,7 @@ def cvt2HeatmapImg(img):
     return img
 
 def rotate_image(image, angle):
-    (h, w) = image.shape[: 2]
+    (h, w) = image.shape[:2]
     center = (w // 2, h // 2)
     M = cv2.getRotationMatrix2D(center, angle, 1.0)
     corrected = cv2.warpAffine(image, M, (w, h), flags = cv2.INTER_CUBIC, \
@@ -84,8 +84,8 @@ def determine_score(arr):
      return score
 
 def correct_skew(image, delta = 2, limit = 70):
-     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-     thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + \
+     gray_img  = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+     thresh = cv2.threshold(gray_img, 0, 255, cv2.THRESH_BINARY_INV + \
         cv2.THRESH_OTSU)[1]
      angles = np.arange(-limit, limit + delta, delta)
      img_stack = np.stack([rotate_image(thresh, angle) for angle \

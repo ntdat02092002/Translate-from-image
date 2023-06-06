@@ -231,7 +231,7 @@ class My_CRAFT():
 
         free_image_list = crop_free_list(free_list, image)
         image_list.extend(free_image_list)
-        print("image list:",image_list)
+        # print("image list:",image_list)
         return image_list
 
 # if __name__ == '__main__':

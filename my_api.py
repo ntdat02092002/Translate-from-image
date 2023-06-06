@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 import json
 import cv2
 import numpy as np
+import gc
 
 from CRAFT_pytorch.my_CRAFT import My_CRAFT
 from text_recognition.my_recogniter import Recogniter
@@ -83,7 +84,6 @@ async def ocr(image: UploadFile = File(...)):
 @app.post("/direct-translate")
 async def direct_tran(text: str = Form(...)):
     translated = translator.translate(text)
-
     return {"result":
                 {
                     "vi": translated
