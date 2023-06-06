@@ -24,6 +24,8 @@ from CRAFT_pytorch.craft import CRAFT
 
 from collections import OrderedDict
 
+from CRAFT_pytorch.odering_output_utils import group_text_box, diff, get_image_list, crop_combine_list, crop_free_list
+
 # def str2bool(v):
 #     return v.lower() in ("yes", "y", "true", "t", "1")
 
@@ -159,40 +161,78 @@ class My_CRAFT():
             self.refine_net.eval()
             POLY = True
 
+    # def detect(self, image):
+    #     # list image cropped to show
+    #     word_images = []
+    #     sx = []
+
+    #     t = time.time()
+
+    #     # load data
+    #     # print("Test image {:s}".format(image_path), end='\r')
+    #     # image = imgproc.loadImage(image_path)
+
+    #     bboxes, polys, score_text = test.test_net(self.net, image, self.text_threshold, self.link_threshold,
+    #         self.low_text, self.cuda, self.poly, self.canvas_size, self.mag_ratio, self.refine_net)
+
+    #     dem = 0
+    #     for box_num in range(len(bboxes)):
+    #         pts = bboxes[box_num]
+    #         if np.all(pts) > 0:
+    #             word, idx = crop(pts, image)
+    #             idx.append(dem)
+    #             sx.append(idx)
+    #             word_images.append(word)
+    #             dem += 1
+
+    #     # # save score text
+    #     # filename, file_ext = os.path.splitext(os.path.basename(image_path))
+    #     # mask_file = result_folder + "/res_" + filename + '_mask.jpg'
+    #     # cv2.imwrite(mask_file, score_text)
+
+    #     # file_utils.saveResult(image_path, image[:,:,::-1], polys, dirname=result_folder)
+
+    #     print("elapsed time : {}s".format(time.time() - t))
+    #     words, re = sort_words(sx, word_images, 15)
+    #     return words
     def detect(self, image):
         # list image cropped to show
         word_images = []
         sx = []
 
-        t = time.time()
+        image = imgproc.deskewing_text(image)
 
-        # load data
-        # print("Test image {:s}".format(image_path), end='\r')
-        # image = imgproc.loadImage(image_path)
+        t = time.time()
 
         bboxes, polys, score_text = test.test_net(self.net, image, self.text_threshold, self.link_threshold,
             self.low_text, self.cuda, self.poly, self.canvas_size, self.mag_ratio, self.refine_net)
 
-        dem = 0
-        for box_num in range(len(bboxes)):
-            pts = bboxes[box_num]
-            if np.all(pts) > 0:
-                word, idx = crop(pts, image)
-                idx.append(dem)
-                sx.append(idx)
-                word_images.append(word)
-                dem += 1
+        # print(len(bboxes))
+        # dem = 0
+        # for box_num in range(len(bboxes)):
+        #     pts = bboxes[box_num]
+        #     if np.all(pts) > 0:
+        #         word, idx = crop(pts, image)
+        #         idx.append(dem)
+        #         sx.append(idx)
+        #         word_images.append(word)
+        #         dem += 1
 
-        # # save score text
-        # filename, file_ext = os.path.splitext(os.path.basename(image_path))
-        # mask_file = result_folder + "/res_" + filename + '_mask.jpg'
-        # cv2.imwrite(mask_file, score_text)
+        single_img_result = []
+        for i, box in enumerate(polys):
+            poly = np.array(box).astype(np.int32).reshape((-1))
+            single_img_result.append(poly)
 
-        # file_utils.saveResult(image_path, image[:,:,::-1], polys, dirname=result_folder)
+        #odering bboxs
+        combine_list, free_list = group_text_box(single_img_result) # use all default param
 
-        print("elapsed time : {}s".format(time.time() - t))
-        words, re = sort_words(sx, word_images, 15)
-        return words
+        # crop image
+        image_list = crop_combine_list(combine_list, image)
+
+        free_image_list = crop_free_list(free_list, image)
+        image_list.extend(free_image_list)
+        print("image list:",image_list)
+        return image_list
 
 # if __name__ == '__main__':
 #     img_path = "image/cc.png"
