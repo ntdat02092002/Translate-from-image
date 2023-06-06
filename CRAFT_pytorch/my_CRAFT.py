@@ -200,7 +200,7 @@ class My_CRAFT():
         word_images = []
         sx = []
 
-        image = imgproc.deskewing_text(image)
+        image = imgproc.correct_skew(image)
 
         t = time.time()
 
