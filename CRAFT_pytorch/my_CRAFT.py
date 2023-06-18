@@ -129,7 +129,7 @@ class My_CRAFT():
         self.refine = False
         self.refine_model = 'weights/craft_refiner_CTW1500.pth'
         self.poly = False
-        self.low_text = 0.4
+        self.low_text = 0.25
         self.link_threshold = 0.4
 
         print('Loading weights from checkpoint (' + self.trained_model + ')')
@@ -232,6 +232,7 @@ class My_CRAFT():
         free_image_list = crop_free_list(free_list, image)
         image_list.extend(free_image_list)
         # print("image list:",image_list)
+
         return image_list
 
 # if __name__ == '__main__':

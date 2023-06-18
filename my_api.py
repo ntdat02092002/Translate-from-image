@@ -16,7 +16,7 @@ from translation.my_translator import Translator
 
 
 detector =  My_CRAFT(trained_model="models/craft_mlt_25k.pth")
-recogniter = Recogniter("models/TPS-ResNet-BiLSTM-CTC.pth", "TPS", "ResNet", "BiLSTM", "CTC")
+recogniter = Recogniter("models/TPS-ResNet-BiLSTM-Attn-case-sensitive.pth", "TPS", "ResNet", "BiLSTM", "Attn")
 translator = Translator("models/TransEnVi.ckpt")
 
 app = FastAPI()
