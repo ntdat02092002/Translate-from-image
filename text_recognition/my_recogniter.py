@@ -16,7 +16,7 @@ from text_recognition.dataset import RawDataset, AlignCollate
 from text_recognition.model import Model
 
 class Opt():
-    def __init__(self, saved_model, Transformation, FeatureExtraction, SequenceModeling, Prediction, sensitive=False):
+    def __init__(self, saved_model, Transformation, FeatureExtraction, SequenceModeling, Prediction, sensitive=True):
         self.saved_model = saved_model
         self.Transformation = Transformation
         self.FeatureExtraction = FeatureExtraction
@@ -30,7 +30,8 @@ class Opt():
         self.imgH = 32
         self.imgW = 100
         self.rgb = False
-        self.character = '0123456789abcdefghijklmnopqrstuvwxyz'
+        # self.character = '0123456789abcdefghijklmnopqrstuvwxyz'
+        self.character = string.printable[:-6]
         self.sensitive = sensitive
         self.PAD = False
         self.num_fiducial = 20
@@ -45,7 +46,7 @@ class Opt():
 
 
 class Recogniter():
-    def __init__(self, saved_model, Transformation, FeatureExtraction, SequenceModeling, Prediction, sensitive=False):
+    def __init__(self, saved_model, Transformation, FeatureExtraction, SequenceModeling, Prediction, sensitive=True):
         self.opt = Opt(saved_model, Transformation, FeatureExtraction, SequenceModeling, Prediction, sensitive)
 
         """ model configuration """
